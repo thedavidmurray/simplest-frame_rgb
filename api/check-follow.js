@@ -1,14 +1,14 @@
 const fetch = require('node-fetch');
 
 // Public Farcaster Hub URL for signature validation and Airstack API details
-const FARCASTER_HUB_URL = 'https://nemes.farcaster.xyz:2281/v1/submitMessage';
+const FARCASTER_HUB_URL = 'https://nemes.farcaster.xyz:2281/v1/validateMessage';
 const AIRSTACK_API_ENDPOINT = 'https://api.airstack.xyz/gql';
 const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY;
 
 exports.handler = async (event) => {
-  const { untrustedData } = JSON.parse(event.body); // Using untrustedData for simplicity
-  const userAFid = untrustedData.fid; // User's FID from the frame interaction
-  const buttonIndex = untrustedData.buttonIndex; // Button index that was clicked
+  const { untrustedData } = JSON.parse(event.body);
+  const userAFid = untrustedData.fid;
+  const buttonIndex = untrustedData.buttonIndex;
 
   // Check if the user is following you before showing RGB controls
   if (buttonIndex === '1') {
@@ -16,35 +16,35 @@ exports.handler = async (event) => {
 
     if (isFollowing) {
       // User is following, respond with RGB frame HTML
-      return generateResponse(rgbFrameHtml(0, 0, 0)); // Starting RGB values
+      return generateResponse(generateRgbFrameHtml(0, 0, 0)); // Starting RGB values
     } else {
       // User is not following, respond with an informational frame
-      return generateResponse(notFollowingHtml);
+      return generateResponse(`<p>Please follow to mint a canvas.</p>`);
     }
   } else if (['2', '3', '4'].includes(buttonIndex)) {
-    // Handle RGB adjustments based on buttonIndex (R, G, B)
-    const { r, g, b } = extractRgbValues(untrustedData.url); // Extract RGB values from the URL
-    const updatedColors = updateRgbValues(buttonIndex, r, g, b);
-    return generateResponse(rgbFrameHtml(updatedColors.r, updatedColors.g, updatedColors.b));
+    // Assume r, g, b values are being stored and retrieved from a datastore or sent as part of the button click payload
+    const { r, g, b } = await retrieveRgbValues(userAFid); // Retrieve current RGB values
+    const updatedValues = updateRgbValues(buttonIndex, r, g, b);
+    return generateResponse(generateRgbFrameHtml(updatedValues.r, updatedValues.g, updatedValues.b));
   } else if (buttonIndex === '5') {
-    // Handle the "MINT" action
-    return generateResponse(mintFrameHtml);
+    // The "MINT" action was triggered, respond with a confirmation message
+    return generateResponse(`<p>Sorry, I'm not that competent, hehe</p>`);
   } else {
     // Fallback for unknown button clicks
     return generateResponse(`<p>Unknown action. Button index: ${buttonIndex}</p>`);
   }
 };
 
-// Helper functions (checkFollowingStatus, generateResponse) remain the same
+// Dummy function for following status check - replace with your actual API call logic
+async function checkFollowingStatus(userAFid, yourFid) {
+  // This should be an API call to check if userAFid is following yourFid
+  return true; // Stubbed as true for now
+}
 
-// Extract RGB values from the URL
-function extractRgbValues(url) {
-  const params = new URL(url).searchParams;
-  return {
-    r: parseInt(params.get('r'), 10) || 0,
-    g: parseInt(params.get('g'), 10) || 0,
-    b: parseInt(params.get('b'), 10) || 0,
-  };
+// Dummy function to retrieve RGB values - replace with actual logic to retrieve values
+async function retrieveRgbValues(userAFid) {
+  // This should retrieve RGB values for the user from your datastore
+  return { r: 0, g: 0, b: 0 }; // Stubbed values
 }
 
 // Update RGB values based on the button clicked
@@ -57,50 +57,35 @@ function updateRgbValues(buttonIndex, r, g, b) {
   }
 }
 
+// Generate the response with the correct Content-Type
+function generateResponse(html) {
+  return {
+    statusCode: 200,
+    headers: { 'Content-Type': 'text/html' },
+    body: html
+  };
+}
+
 // Generate RGB frame HTML with updated RGB values
-function rgbFrameHtml(r, g, b) {
+function generateRgbFrameHtml(r, g, b) {
+  // Generate the HTML for the RGB frame
+  // Include the OpenGraph tags and buttons as required by the frame spec
   return `
     <!DOCTYPE html>
     <html>
     <head>
       <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="https://path-to-dynamic-image.com/rgb?r=${r}&g=${g}&b=${b}" />
-      <meta property="fc:frame:button:2" content="R" />
-      <meta property="fc:frame:button:3" content="G" />
-      <meta property="fc:frame:button:4" content="B" />
+      <meta property="fc:frame:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
+      <meta property="fc:frame:button:2" content="Increase Red" />
+      <meta property="fc:frame:button:3" content="Increase Green" />
+      <meta property="fc:frame:button:4" content="Increase Blue" />
       <meta property="fc:frame:button:5" content="MINT!" />
       <meta property="fc:frame:post_url" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/check-follow?r=${r}&g=${g}&b=${b}" />
     </head>
     <body>
+      <p>RGB: (${r}, ${g}, ${b})</p>
       <p>Adjust RGB values or MINT!</p>
     </body>
     </html>
   `;
 }
-
-// Mint frame HTML
-const mintFrameHtml = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://path-to-your-mint-confirmation-image.png" />
-  </head>
-  <body>
-    <p>Sorry, I'm not that competent, hehe</p>
-  </body>
-  </html>
-`;
-
-// Informational frame for non-followers
-const notFollowingHtml = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta property="fc:frame" content="vNext" />
-  </head>
-  <body>
-    <p>Please follow to proceed.</p>
-  </body>
-  </html>
-`;
