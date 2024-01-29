@@ -1,7 +1,7 @@
 export default async (req, context) => {
     const url = new URL(req.url);
     const mode = url.searchParams.get('mode') || 'start';
-    const r = url.searchParams.get('r') || 0;
+    const r = url.searchParams.get('r') || 255;
     const g = url.searchParams.get('g') || 0;
     const b = url.searchParams.get('b') || 0;
     const host = process.env.URL; // Your Netlify URL
