@@ -1,4 +1,3 @@
-// This would be in a Netlify Function, e.g., generate-image.js
 const { createCanvas } = require('canvas');
 
 exports.handler = async (event) => {
@@ -8,7 +7,12 @@ exports.handler = async (event) => {
   const context = canvas.getContext('2d');
 
   // Extract RGB values from query parameters
-  const { r, g, b } = event.queryStringParameters;
+  const r = parseInt(event.queryStringParameters.r, 10) || 0;
+  const g = parseInt(event.queryStringParameters.g, 10) || 0;
+  const b = parseInt(event.queryStringParameters.b, 10) || 0;
+
+  // Log the RGB values for debugging
+  console.log(`Received RGB values: r=${r}, g=${g}, b=${b}`);
 
   // Set canvas background to the specified RGB color
   context.fillStyle = `rgb(${r},${g},${b})`;
