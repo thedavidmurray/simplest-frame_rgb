@@ -15,11 +15,11 @@ export default async (req, context) => {
             <html>
             <head>
                 <meta property="og:title" content="Follow to Mint" />
-                <meta property="og:image" content="${host}/.netlify/functions/generate-image?r=128&g=128&b=128" />
+                <meta property="og:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=128&g=128&b=128" />
                 <meta property="fc:frame" content="vNext" />
-                <meta property="fc:frame:image" content="${host}/.netlify/functions/generate-image?r=128&g=128&b=128" />
+                <meta property="fc:frame:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=128&g=128&b=128" />
                 <meta property="fc:frame:button:1" content="Follow to mint a canvas" />
-                <meta property="fc:frame:post_url" content="${host}/.netlify/functions/check-follow" />
+                <meta property="fc:frame:post_url" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/check-follow" />
                 <!-- Styles and other HTML -->
             </head>
             <body>
@@ -34,14 +34,14 @@ export default async (req, context) => {
             <html>
             <head>
                 <meta property="og:title" content="Adjust RGB" />
-                <meta property="og:image" content="${host}/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
+                <meta property="og:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
                 <meta property="fc:frame" content="vNext" />
-                <meta property="fc:frame:image" content="${host}/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
+                <meta property="fc:frame:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
                 <meta property="fc:frame:button:1" content="Increase Red" />
                 <meta property="fc:frame:button:2" content="Increase Green" />
                 <meta property="fc:frame:button:3" content="Increase Blue" />
                 <meta property="fc:frame:button:4" content="MINT!" />
-                <meta property="fc:frame:post_url" content="${host}/.netlify/functions/check-follow" />
+                <meta property="fc:frame:post_url" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/check-follow" />
                 <!-- Styles and other HTML -->
             </head>
             <body>
@@ -57,9 +57,9 @@ export default async (req, context) => {
             <html>
             <head>
                 <meta property="og:title" content="Minted!" />
-                <meta property="og:image" content="${host}/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
+                <meta property="og:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
                 <meta property="fc:frame" content="vNext" />
-                <meta property="fc:frame:image" content="${host}/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
+                <meta property="fc:frame:image" content="https://leafy-dusk-954649.netlify.app/.netlify/functions/generate-image?r=${r}&g=${g}&b=${b}" />
                 <!-- No buttons needed here, just show the minted message -->
                 <!-- Styles and other HTML -->
             </head>
