@@ -1,86 +1,48 @@
 const fetch = require('node-fetch');
 
-const HUB_VALIDATE_ENDPOINT = 'https://hub.farcaster.xyz/v1/validateMessage';
+// Public Farcaster Hub URL for signature validation
+const FARCASTER_HUB_URL = 'https://nemes.farcaster.xyz:2281/v1/submitMessage';
 const AIRSTACK_API_ENDPOINT = 'https://api.airstack.xyz/gql';
-const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY; // Your API key stored in Netlify environment variables
+const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY;
 
 exports.handler = async (event) => {
-  const { trustedData } = JSON.parse(event.body);
+  // Parse the incoming POST data
+  const postData = JSON.parse(event.body);
+  const { trustedData } = postData;
 
-  // Validate the trustedData with the Farcaster Hub
-  const validationResponse = await fetch(HUB_VALIDATE_ENDPOINT, {
+  // Convert the trustedData messageBytes from hex to a Buffer
+  const messageBuffer = Buffer.from(trustedData.messageBytes, 'hex');
+
+  // Send the messageBuffer to the Farcaster Hub for signature validation
+  const validationResponse = await fetch(FARCASTER_HUB_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/octet-stream',
     },
-    body: Buffer.from(trustedData.messageBytes, 'hex'), // Assuming messageBytes is a hex string
+    body: messageBuffer,
   });
 
   if (!validationResponse.ok) {
     // Handle validation error
-    return { statusCode: 400, body: 'Invalid signature.' };
+    console.error('Error validating message:', await validationResponse.text());
+    return { statusCode: validationResponse.status, body: 'Signature validation failed.' };
   }
 
   const validationData = await validationResponse.json();
   if (!validationData.valid) {
-    // If the message is not valid, return an error
-    return { statusCode: 400, body: 'Invalid message.' };
+    return { statusCode: 400, body: 'Invalid signature.' };
   }
 
-  // Extract user FID from the validated message
-  const userAFid = validationData.message.data.frameActionBody.url; // Replace with correct property path
+  // The user's FID should be extracted from the validated message
+  // Assuming the validated message structure is known and the FID is available
+  const userAFid = 'Extracted FID from validated message'; // Replace with correct extraction
 
-  // GraphQL query to check if the user is following you
-  const query = `
-    query isFollowing {
-      Wallet(input: {identity: "${userAFid}", blockchain: ethereum}) {
-        socialFollowers(input: {filter: {identity: {_in: ["18570"]}}}) { // Replace "18570" with your FID
-          Follower {
-            dappName
-            dappSlug
-            followingProfileId
-            followerProfileId
-          }
-        }
-      }
-    }
-  `;
-
-  try {
-    const response = await fetch(AIRSTACK_API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AIRSTACK_API_KEY}`
-      },
-      body: JSON.stringify({ query })
-    });
-
-    const data = await response.json();
-    const isFollowing = data.data.Wallet.socialFollowers.Follower.length > 0;
-
-    // Respond with the appropriate HTML and OpenGraph tags for the next frame
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'text/html' },
-      body: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <!-- Insert your OpenGraph tags here -->
-            <!-- Make sure to use the correct URL for the image and button actions -->
-          </head>
-          <body>
-            <!-- Your body content here -->
-          </body>
-        </html>
-      `,
-    };
-  } catch (error) {
-    console.error('Error checking follow status:', error);
-    return {
-      statusCode: 500,
-      body: 'Internal Server Error'
-    };
-  }
+  // Now make a GraphQL request to Airstack to check if the user with that FID is following you
+  // Rest of your implementation...
+  
+  // Placeholder response until you complete the implementation
+  return {
+    statusCode: 200,
+    body: 'Signature verified, further functionality to be implemented.'
+  };
 };
