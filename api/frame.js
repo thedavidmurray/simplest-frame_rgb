@@ -28,6 +28,8 @@ export default async (req, context) => {
                         text-align: center;
                     }
                     button {
+                        margin: 5px;
+                        display: inline-block;
                         padding: 10px 20px;
                         font-size: 1.5rem;
                         cursor: pointer;
