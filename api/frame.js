@@ -1,55 +1,58 @@
 export default async (req, context) => {
     const url = new URL(req.url);
-    const count = url.searchParams.get('count') || 0;
+    const mode = url.searchParams.get('mode') || 'start'; // 'start', 'rgb', or 'mint'
 
-    const font = {
-        file: 'Redaction-Regular.woff2',
-        name: 'Redaction'
-    };
+    let html;
 
-    const html = `
-        <html>
-        <head>
-        <style>
-            @font-face {
-                font-family: "${font.name}";
-                src:
-                    local("Trickster"),
-                    url("/fonts/${font.file}") format("woff2");
-                }
-            body {
-                margin: 0;
-                padding: 0;
-            }
-            fc-frame {
-                font-family: "${font.name}";
-                display: flex;
-                width: 100vw;
-                height: 100vh;
-                color: white;
-                background: black;
-                align-items: center;
-                justify-content: center;
-                font-size: 5em;
-                line-height: 1;
-            }
-        </style>
-        </head>
-        <body>
-        <fc-frame>
-            i've been framed ${count} times
-        </fc-frame>
-        </body>
-    </html>
-    `
+    if (mode === 'start') {
+        html = `
+            <html>
+            <head>
+                <style>
+                    @keyframes gradient {
+                        0% { background-color: #ff0000; }
+                        33% { background-color: #00ff00; }
+                        66% { background-color: #0000ff; }
+                        100% { background-color: #ff0000; }
+                    }
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        animation: gradient 5s infinite;
+                    }
+                    .centered {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        text-align: center;
+                    }
+                    button {
+                        padding: 10px 20px;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="centered">
+                    <p>Gradient Magic</p>
+                    <button onclick="location.href='/?mode=rgb'">Follow to mint a canvas</button>
+                </div>
+            </body>
+            </html>
+        `;
+    } else if (mode === 'rgb') {
+        // We will fill this in the next step
+    } else if (mode === 'mint') {
+        // We will fill this in a later step
+    }
 
-    return new Response(html, 
-        {
-            status: 200,
-            headers: { 'Content-Type': 'text/html' },
-        }
-    );
-}
+    return new Response(html, {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' },
+    });
+};
 
 export const config = {
     path: "/frame"
