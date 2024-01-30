@@ -1,6 +1,12 @@
 # RGB Simple
 ## built on the back of the simpler counter
 
+
+
+
+
+
+This is the readme from Simplest Frame:
 # Simplest Frame
 ## A zero-cost, zero-framework, dynamic Farcaster Frame template
 
